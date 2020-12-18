@@ -19,11 +19,9 @@ output是各model的features大小(平均每個單字)。skip: 4800; word2vec: 3
 
 ## Skip-thought 
 
-:::info
-相比word2vec或GloVe優點是skip比較能捕捉語意，所以都是直接套的話就算效果都會比較好。缺點是字彙量比較小(800k)，不夠精確在我們的domain。適合當base line。
+**相比word2vec或GloVe優點是skip比較能捕捉語意，所以都是直接套的話就算效果都會比較好。缺點是字彙量比較小(800k)，不夠精確在我們的domain。適合當base line。**
 
-根據參考的那篇report，如果不額外想辦法domain adaption的話效果上限就在那邊。
-:::
+**根據參考的那篇report，如果不額外想辦法domain adaption的話效果上限就在那邊。**
 
 主要照[github project](https://github.com/ryankiros/skip-thoughts)安裝即可，但因為有版本問題需要額外注意一些細節
 
@@ -47,7 +45,7 @@ output是各model的features大小(平均每個單字)。skip: 4800; word2vec: 3
 
 1. git clone https://github.com/ryankiros/skip-thoughts.git
 2. 用本專案的版本替換掉原來的 skipthoughts.py
-3. 需要下載他的字典和pretrained model，==檔案總共5G左右比較大需要下載比較久，想要可以先下載==
+3. 需要下載他的字典和pretrained model，**檔案總共5G左右比較大需要下載比較久，想要可以先下載**
 
 ```shell=
 mkdir word_embeddings
@@ -82,9 +80,7 @@ skip可以透過訓練linear mapping來從其他大的word vector，像是word2v
 
 ## Word2Vec
 
-:::info
-優點是字彙量很大，捕捉語意效果沒那麼好，不夠domain specific。
-:::
+**優點是字彙量很大，缺點是捕捉語意效果沒那麼好，也不夠domain specific。**
 
 [model zoo](https://github.com/3Top/word2vec-api#where-to-get-a-pretrained-models)在這。各model差別只在訓練的data不一樣。我用的是規模最大的google news 300。
 
@@ -116,6 +112,6 @@ output: n_words\*400。
 
 ## Domain adaption
 
-原因是一樣是單字為red，我們的task中就會希望他預測的下一個字是flower的比重要比較高。但是word vector本身訓練成本高，且字彙量很大的情況下額外訓練效果不彰。
+原因是假如說單字同樣為red，我們的task中就會希望他預測的下一個字是flower的比重要比較高。但是word vector本身訓練成本高，且字彙量很大的情況下額外訓練效果不彰。
 
 參考report中的想法是freeze住encoder，在encoder後面接上並訓練LSTM和fc layer。訓練來源是在GAN訓練過程中generator的gradient。也就是說不是直接透過平均各單字，而是使用RNN來得到更準確的representation。
