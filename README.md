@@ -2,10 +2,20 @@
 參考report的[github](https://github.com/samirsen/image-generator)。
 
 大多數pretrained encoder都是end to end架構，接收字串等input後就會輸出固定shape的feature vector。正確安裝後，api相對簡單。但因為那些encoder安裝過程大多需要下載較大的model file，實際安裝還是需要自己本地裝。
+pretrained encoder輸出的是n_word\*features的shape。不用LSTM等架構的情況下就是直接average各單字獲得size為features的feature vector。
 
-舉例來說像是model.encode(X)就能輸出結果了。
+本專案提供的是安裝上需要注意的細節(包跨版本相容等原始專案不容易找到解決方法的問題)，以及需要替換以解決問題的檔案。安裝完畢後可以直接使用encoder_lazyApi方便使用。
 
-本專案提供的是安裝上需要注意的細節(包跨版本相容等原始專案不容易找到解決方法的問題)，以及需要替換以解決問題的檔案。
+## lazyApi Encoder
+```python
+from encoder_lazyApi import Encoder
+# path = $model_path (only needed if using word2vec)
+encoder = Encoder(*model_name*, *path*)
+features = encoder(*image caption*)
+```
+path指的是你下載的word2vec pretrained path，只接受.bin檔。使用skip thought的話不用輸入。
+input直接輸入image caption就可以了，不需要前處理。
+output是各model的features大小(平均每個單字)。skip: 4800; word2vec: 300。
 
 ## Skip-thought 
 
@@ -62,7 +72,7 @@ vectors = encoder.encode(X)
 vectors[1]就是我們要的feature vectors。vectors[0]是input size。
 
 Input: 原本的image caption即可。不須經過前處理。
-Output: 4800 dims。和高斯雜訊concatenate即可開始train
+Output: n_words\*4800 。
 
 ### Word expansion
 
@@ -102,10 +112,10 @@ vectors = model[X]
 其中X是前處理過的word array。
 
 input:前處理過的image caption。
-output: vectors[0]是input大小，vectors[1]是300 dims的feature vectors。vectors[1]與高斯雜訊concatenate即可開始train。
+output: n_words\*400。
 
 ## Domain adaption
 
 原因是一樣是單字為red，我們的task中就會希望他預測的下一個字是flower的比重要比較高。但是word vector本身訓練成本高，且字彙量很大的情況下額外訓練效果不彰。
 
-參考report中的想法是freeze住encoder，在encoder後面接上並訓練LSTM和fc layer。訓練來源是在GAN訓練過程中generator的gradient。
+參考report中的想法是freeze住encoder，在encoder後面接上並訓練LSTM和fc layer。訓練來源是在GAN訓練過程中generator的gradient。也就是說不是直接透過平均各單字，而是使用RNN來得到更準確的representation。
