@@ -1,4 +1,5 @@
 # Pretrained encoders
+參考report的[github](https://github.com/samirsen/image-generator)。
 
 大多數pretrained encoder都是end to end架構，接收字串等input後就會輸出固定shape的feature vector。正確安裝後，api相對簡單。但因為那些encoder安裝過程大多需要下載較大的model file，實際安裝還是需要自己本地裝。
 
