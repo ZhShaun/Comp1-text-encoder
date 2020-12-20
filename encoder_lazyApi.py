@@ -10,6 +10,7 @@ from gensim.models import KeyedVectors
 
 import nltk
 import numpy as np
+from nltk import word_tokenize
 from nltk.stem.porter import PorterStemmer
 from nltk.corpus import stopwords
 nltk.download('stopwords')
@@ -36,12 +37,14 @@ class Encoder():
     def __call__(self, X):
         features = None
         if self.model_name == 'skip':
-            features = self.model.encode(X, verbose=False, use_eos=True)
+            features = self.model.encode(word_tokenize(X), verbose=False, use_eos=True)
         elif self.model_name == 'word2vec':
-            X = tokenizer_stem_nostop(X)
-            features = self.model[X]
+            features = self.model[word_tokenize(X)]
         
         return np.mean(features, axis=0)
+
+def tokenizer(text):
+    return re.split('\s|(?<!\d)[,.](?!\d)', text)
 
 def tokenizer_stem_nostop(text):
     porter = PorterStemmer()
