@@ -39,12 +39,16 @@ class Encoder():
         if self.model_name == 'skip':
             features = self.model.encode(word_tokenize(X), verbose=False, use_eos=True)
         elif self.model_name == 'word2vec':
-            features = self.model[word_tokenize(X)]
+            features = self.model[tokenizer_nostop(X)]
         
         return np.mean(features, axis=0)
 
 def tokenizer(text):
     return re.split('\s|(?<!\d)[,.](?!\d)', text)
+
+def tokenizer_nostop(text):
+    text = word_tokenize(text)
+    return [w for w in text if w not in stop]
 
 def tokenizer_stem_nostop(text):
     porter = PorterStemmer()
